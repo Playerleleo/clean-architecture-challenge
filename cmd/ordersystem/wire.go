@@ -1,3 +1,6 @@
+//go:build wireinject
+// +build wireinject
+
 package main
 
 import (
@@ -11,47 +14,33 @@ import (
 	"github.com/google/wire"
 )
 
-// ProviderSet para repositório de pedidos
-var OrderRepositorySet = wire.NewSet(
-	database.NewOrderRepository,
-	wire.Bind(new(entity.OrderRepositoryInterface), new(*database.OrderRepository)),
-)
-
-// ProviderSet para eventos
-var EventSet = wire.NewSet(
-	events.NewEvent,
-	wire.Bind(new(events.EventInterface), new(*events.Event)),
-)
-
-// ProviderSet para casos de uso
-var UseCaseSet = wire.NewSet(
-	OrderRepositorySet,
-	EventSet,
-	usecase.NewCreateOrderUseCase,
-	usecase.NewListOrdersUseCase,
-)
-
-// ProviderSet para handlers web
-var WebHandlerSet = wire.NewSet(
-	OrderRepositorySet,
-	EventSet,
-	web.NewWebOrderHandler,
-)
-
-// InitializeCreateOrderUseCase inicializa o caso de uso de criação de pedido
-func InitializeCreateOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.CreateOrderUseCase {
-	wire.Build(UseCaseSet)
+func NewCreateOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.CreateOrderUseCase {
+	wire.Build(
+		database.NewOrderRepository,
+		wire.Bind(new(entity.OrderRepositoryInterface), new(*database.OrderRepository)),
+		events.NewEvent,
+		wire.Bind(new(events.EventInterface), new(*events.Event)),
+		usecase.NewCreateOrderUseCase,
+	)
 	return &usecase.CreateOrderUseCase{}
 }
 
-// InitializeListOrdersUseCase inicializa o caso de uso de listagem de pedidos
-func InitializeListOrdersUseCase(db *sql.DB) *usecase.ListOrdersUseCase {
-	wire.Build(UseCaseSet)
+func NewListOrdersUseCase(db *sql.DB) *usecase.ListOrdersUseCase {
+	wire.Build(
+		database.NewOrderRepository,
+		wire.Bind(new(entity.OrderRepositoryInterface), new(*database.OrderRepository)),
+		usecase.NewListOrdersUseCase,
+	)
 	return &usecase.ListOrdersUseCase{}
 }
 
-// InitializeWebOrderHandler inicializa o handler web de pedidos
-func InitializeWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
-	wire.Build(WebHandlerSet)
+func NewWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
+	wire.Build(
+		database.NewOrderRepository,
+		wire.Bind(new(entity.OrderRepositoryInterface), new(*database.OrderRepository)),
+		events.NewEvent,
+		wire.Bind(new(events.EventInterface), new(*events.Event)),
+		web.NewWebOrderHandler,
+	)
 	return &web.WebOrderHandler{}
 }

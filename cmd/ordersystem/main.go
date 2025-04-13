@@ -42,11 +42,11 @@ func main() {
 		RabbitMQChannel: rabbitMQChannel,
 	})
 
-	createOrderUseCase := InitializeCreateOrderUseCase(db, eventDispatcher)
-	listOrdersUseCase := InitializeListOrdersUseCase(db)
+	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
+	listOrdersUseCase := NewListOrdersUseCase(db)
 
 	webserver := webserver.NewWebServer(configs.WebServerPort)
-	webOrderHandler := InitializeWebOrderHandler(db, eventDispatcher)
+	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
 	webserver.AddHandler("/order", webOrderHandler.Create)
 	webserver.AddHandler("/order", webOrderHandler.List)
 	fmt.Println("Starting web server on port", configs.WebServerPort)
