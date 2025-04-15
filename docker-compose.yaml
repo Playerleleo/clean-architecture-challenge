@@ -1,3 +1,5 @@
+version: '3'
+
 services:
   mysql:
     image: mysql:5.7
@@ -11,6 +13,12 @@ services:
       - 3306:3306
     volumes:
       - .docker/mysql:/var/lib/mysql
+      - .docker/mysql/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -22,3 +30,46 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_NODENAME: rabbit@localhost
+      RABBITMQ_ERLANG_COOKIE: SWQOKODSQALRPCLNMEQG
+    volumes:
+      - .docker/rabbitmq/data:/var/lib/rabbitmq
+      - .docker/rabbitmq/log:/var/log/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  app:
+    build: .
+    container_name: orders-app
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+      - "8081:8081"
+    volumes:
+      - .:/app
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DB_DRIVER: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: orders
+      DB_HOST: mysql
+      DB_PORT: 3306
+      WEB_SERVER_PORT: 8080
+      GRPC_SERVER_PORT: 50051
+      GRAPHQL_SERVER_PORT: 8081
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
