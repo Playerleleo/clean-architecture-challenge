@@ -1,0 +1,34 @@
+### Create Order
+POST http://localhost:8000/order
+Content-Type: application/json
+
+{
+    "id": "1",
+    "price": 100,
+    "tax": 10
+}
+
+### List Orders
+GET http://localhost:8000/order
+
+### Create Order gRPC
+grpcurl -plaintext -d '{"id": "2", "price": 200, "tax": 20}' localhost:50051 pb.OrderService.CreateOrder
+
+### List Orders gRPC
+grpcurl -plaintext localhost:50051 pb.OrderService.ListOrders
+
+### Create Order GraphQL
+POST http://localhost:8080/query
+Content-Type: application/json
+
+{
+    "query": "mutation { createOrder(input: {id: \"3\", price: 300, tax: 30}) { id price tax finalPrice } }"
+}
+
+### List Orders GraphQL
+POST http://localhost:8080/query
+Content-Type: application/json
+
+{
+    "query": "query { listOrders { id price tax finalPrice } }"
+} 
