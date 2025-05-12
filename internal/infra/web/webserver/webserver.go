@@ -21,12 +21,11 @@ func NewWebServer(serverPort string) *WebServer {
 	}
 }
 
-func (s *WebServer) AddHandler(path string, handler http.HandlerFunc) {
+func (s *WebServer) AddHandler(method string, path string, handler http.HandlerFunc) {
 	if s.Handlers[path] == nil {
 		s.Handlers[path] = make(map[string]http.HandlerFunc)
 	}
-	s.Handlers[path][http.MethodGet] = handler
-	s.Handlers[path][http.MethodPost] = handler
+	s.Handlers[path][method] = handler
 }
 
 // loop through the handlers and add them to the router

@@ -1,0 +1,13 @@
+### Criar uma nova order
+POST http://localhost:8080/order
+Content-Type: application/json
+
+{
+    "id": "1",
+    "price": 100,
+    "tax": 10
+}
+
+### Listar todas as orders
+GET http://localhost:8080/order
+Accept: application/json 
