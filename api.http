@@ -1,5 +1,7 @@
-### Criar uma nova order
-POST http://localhost:8080/order
+### REST API
+
+# Criar pedido
+POST http://localhost:8000/order
 Content-Type: application/json
 
 {
@@ -8,6 +10,27 @@ Content-Type: application/json
     "tax": 10
 }
 
-### Listar todas as orders
-GET http://localhost:8080/order
-Accept: application/json 
+### Listar pedidos
+GET http://localhost:8000/order
+
+### GraphQL
+
+# Criar pedido
+POST http://localhost:8080/query
+Content-Type: application/json
+
+{
+    "query": "mutation { createOrder(input: {id: \"2\", price: 200, tax: 20}) { id price tax finalPrice } }"
+}
+
+### Listar pedidos
+POST http://localhost:8080/query
+Content-Type: application/json
+
+{
+    "query": "query { listOrders { id price tax finalPrice } }"
+}
+
+### gRPC (via cliente)
+# O cliente gRPC já está configurado para testar automaticamente
+# Ele vai criar dois pedidos e listar todos 

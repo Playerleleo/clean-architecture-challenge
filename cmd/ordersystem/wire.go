@@ -9,6 +9,7 @@ import (
 	"github.com/devfullcycle/20-CleanArch/internal/entity"
 	"github.com/devfullcycle/20-CleanArch/internal/event"
 	"github.com/devfullcycle/20-CleanArch/internal/infra/database"
+	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/service"
 	"github.com/devfullcycle/20-CleanArch/internal/infra/web"
 	"github.com/devfullcycle/20-CleanArch/internal/usecase"
 	"github.com/devfullcycle/20-CleanArch/pkg/events"
@@ -39,6 +40,25 @@ func NewCreateOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInt
 		usecase.NewCreateOrderUseCase,
 	)
 	return &usecase.CreateOrderUseCase{}
+}
+
+func NewListOrdersUseCase(db *sql.DB) *usecase.ListOrdersUseCase {
+	wire.Build(
+		setOrderRepositoryDependency,
+		usecase.NewListOrdersUseCase,
+	)
+	return &usecase.ListOrdersUseCase{}
+}
+
+func NewOrderService(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *service.OrderService {
+	wire.Build(
+		setOrderRepositoryDependency,
+		setOrderCreatedEvent,
+		NewCreateOrderUseCase,
+		NewListOrdersUseCase,
+		service.NewOrderService,
+	)
+	return &service.OrderService{}
 }
 
 func NewWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
