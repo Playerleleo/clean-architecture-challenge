@@ -3,7 +3,7 @@ package routes
 import (
 	"net/http"
 
-	"github.com/devfullcycle/20-CleanArch/internal/infra/web/handlers"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/web/handlers"
 )
 
 func SetupRoutes(orderHandler *handlers.OrderHandler) {

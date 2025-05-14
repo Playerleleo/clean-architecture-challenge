@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/usecase"
 )
 
 type OrderHandler struct {

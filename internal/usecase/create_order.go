@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/entity"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/pkg/events"
 )
 
 type OrderInputDTO struct {
@@ -36,14 +36,19 @@ func NewCreateOrderUseCase(
 	}
 }
 
-func (c *CreateOrderUseCase) Execute(input OrderInputDTO) (OrderOutputDTO, error) {
-	order := entity.Order{
-		ID:    input.ID,
-		Price: input.Price,
-		Tax:   input.Tax,
+func (uc *CreateOrderUseCase) Execute(input OrderInputDTO) (OrderOutputDTO, error) {
+	order, err := entity.NewOrder(input.ID, input.Price, input.Tax)
+	if err != nil {
+		return OrderOutputDTO{}, err
 	}
-	order.CalculateFinalPrice()
-	if err := c.OrderRepository.Save(&order); err != nil {
+
+	err = order.CalculateFinalPrice()
+	if err != nil {
+		return OrderOutputDTO{}, err
+	}
+
+	err = uc.OrderRepository.Save(order)
+	if err != nil {
 		return OrderOutputDTO{}, err
 	}
 
@@ -51,11 +56,11 @@ func (c *CreateOrderUseCase) Execute(input OrderInputDTO) (OrderOutputDTO, error
 		ID:         order.ID,
 		Price:      order.Price,
 		Tax:        order.Tax,
-		FinalPrice: order.Price + order.Tax,
+		FinalPrice: order.FinalPrice,
 	}
 
-	c.OrderCreated.SetPayload(dto)
-	c.EventDispatcher.Dispatch(c.OrderCreated)
+	uc.OrderCreated.SetPayload(dto)
+	uc.EventDispatcher.Dispatch(uc.OrderCreated)
 
 	return dto, nil
 }

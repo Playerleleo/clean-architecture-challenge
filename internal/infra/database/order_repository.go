@@ -4,19 +4,21 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/entity"
 )
 
 type OrderRepository struct {
-	Db *sql.DB
+	db *sql.DB
 }
 
 func NewOrderRepository(db *sql.DB) *OrderRepository {
-	return &OrderRepository{Db: db}
+	return &OrderRepository{
+		db: db,
+	}
 }
 
 func (r *OrderRepository) Save(order *entity.Order) error {
-	stmt, err := r.Db.Prepare("INSERT INTO orders (id, price, tax, final_price) VALUES (?, ?, ?, ?)")
+	stmt, err := r.db.Prepare("INSERT INTO orders (id, price, tax, final_price) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
@@ -28,7 +30,7 @@ func (r *OrderRepository) Save(order *entity.Order) error {
 }
 
 func (r *OrderRepository) List(ctx context.Context) ([]entity.Order, error) {
-	rows, err := r.Db.QueryContext(ctx, "SELECT id, price, tax, final_price FROM orders")
+	rows, err := r.db.QueryContext(ctx, "SELECT id, price, tax, final_price FROM orders")
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +50,7 @@ func (r *OrderRepository) List(ctx context.Context) ([]entity.Order, error) {
 
 func (r *OrderRepository) GetTotal() (int, error) {
 	var total int
-	err := r.Db.QueryRow("Select count(*) from orders").Scan(&total)
+	err := r.db.QueryRow("Select count(*) from orders").Scan(&total)
 	if err != nil {
 		return 0, err
 	}

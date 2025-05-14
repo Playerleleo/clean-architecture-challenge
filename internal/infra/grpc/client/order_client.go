@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/pb"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/grpc/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

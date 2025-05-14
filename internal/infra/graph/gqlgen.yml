@@ -1,0 +1,33 @@
+# Onde estão todos os schemas
+schema:
+  - schema.graphqls
+
+# Onde o código gerado deve ir
+exec:
+  filename: generated.go
+  package: graph
+
+# Onde os resolvers devem ir
+resolver:
+  layout: follow-schema
+  dir: .
+  package: graph
+  filename_template: "{name}.resolvers.go"
+
+# Opções opcionais
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+
+# Geração automática
+autobind:
+  - "github.com/leonardogomesdossantos/clean-architecture-challenge/internal/domain/entity" 

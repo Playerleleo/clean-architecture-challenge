@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/devfullcycle/20-CleanArch/internal/event"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/database"
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/event"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/database"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/usecase"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/pkg/events"
 )
 
 type WebOrderHandler struct {

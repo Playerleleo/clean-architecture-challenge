@@ -7,12 +7,11 @@ package graph
 import (
 	"context"
 
-	"github.com/devfullcycle/20-CleanArch/internal/infra/graph/model"
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/usecase"
 )
 
 // CreateOrder is the resolver for the createOrder field.
-func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderInput) (*model.Order, error) {
+func (r *mutationResolver) CreateOrder(ctx context.Context, input *OrderInput) (*Order, error) {
 	dto := usecase.OrderInputDTO{
 		ID:    input.ID,
 		Price: float64(input.Price),
@@ -22,7 +21,7 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderIn
 	if err != nil {
 		return nil, err
 	}
-	return &model.Order{
+	return &Order{
 		ID:         output.ID,
 		Price:      float64(output.Price),
 		Tax:        float64(output.Tax),
@@ -30,7 +29,30 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderIn
 	}, nil
 }
 
+// ListOrders is the resolver for the listOrders field.
+func (r *queryResolver) ListOrders(ctx context.Context) ([]*Order, error) {
+	orders, err := r.ListOrdersUseCase.Execute(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*Order
+	for _, order := range orders {
+		result = append(result, &Order{
+			ID:         order.ID,
+			Price:      float64(order.Price),
+			Tax:        float64(order.Tax),
+			FinalPrice: float64(order.FinalPrice),
+		})
+	}
+	return result, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
 type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }

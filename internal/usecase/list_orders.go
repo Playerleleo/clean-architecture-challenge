@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/entity"
 )
 
 type ListOrdersUseCase struct {

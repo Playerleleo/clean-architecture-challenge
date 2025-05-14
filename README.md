@@ -70,4 +70,24 @@ Acesse `http://localhost:8080` no navegador para usar o playground GraphQL.
 │   ├── usecase/        # Casos de uso
 │   └── infra/          # Implementações (REST, gRPC, GraphQL)
 └── docker-compose.yaml # Configuração dos containers
-``` 
+```
+
+## Exemplos de uso
+
+### Consulta GraphQL (Playground)
+
+Veja como consultar pedidos usando o Playground do GraphQL:
+
+![Exemplo GraphQL Playground](./docs/graphql-playground.png)
+
+---
+
+### Consulta REST (Postman/Insomnia)
+
+Veja como consultar pedidos usando a API REST:
+
+![Exemplo REST GET](./docs/rest-get.png)
+
+---
+
+> Para visualizar essas telas, salve os prints na pasta `docs` com os nomes indicados acima. 

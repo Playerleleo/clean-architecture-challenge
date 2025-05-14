@@ -8,17 +8,17 @@ import (
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/devfullcycle/20-CleanArch/configs"
-	"github.com/devfullcycle/20-CleanArch/internal/event"
-	"github.com/devfullcycle/20-CleanArch/internal/event/handler"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/database"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/graph"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/pb"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/service"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/web/handlers"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/web/webserver"
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/configs"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/event"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/event/handler"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/database"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/graph"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/grpc/pb"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/grpc/service"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/web/handlers"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/web/webserver"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/usecase"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/pkg/events"
 	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -72,6 +72,7 @@ func main() {
 
 	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		CreateOrderUseCase: *createOrderUseCase,
+		ListOrdersUseCase:  listOrdersUseCase,
 	}}))
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

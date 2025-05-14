@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/client"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/grpc/client"
 )
 
 func main() {
