@@ -3,8 +3,10 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
+	"time"
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -13,6 +15,7 @@ import (
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/event/handler"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/database"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/graph"
+	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/grpc/client"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/grpc/pb"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/grpc/service"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/web/handlers"
@@ -69,6 +72,37 @@ func main() {
 		panic(err)
 	}
 	go grpcServer.Serve(lis)
+
+	// Teste do gRPC
+	time.Sleep(time.Second) // Aguardar o servidor iniciar
+	orderClient, err := client.NewOrderClient(fmt.Sprintf("localhost:%s", configs.GRPCServerPort))
+	if err != nil {
+		log.Fatalf("Erro ao criar cliente: %v", err)
+	}
+
+	// Criar primeira order
+	orderID1 := fmt.Sprintf("order_%d", time.Now().UnixNano())
+	createResp1, err := orderClient.CreateOrder(orderID1, 100.0, 10.0)
+	if err != nil {
+		log.Fatalf("Erro ao criar order: %v", err)
+	}
+	fmt.Printf("Order criada: %v\n", createResp1)
+
+	// Criar segunda order
+	orderID2 := fmt.Sprintf("order_%d", time.Now().UnixNano())
+	createResp2, err := orderClient.CreateOrder(orderID2, 200.0, 20.0)
+	if err != nil {
+		log.Fatalf("Erro ao criar order: %v", err)
+	}
+	fmt.Printf("Order criada: %v\n", createResp2)
+
+	// Listar orders
+	time.Sleep(time.Second) // Aguardar um pouco para garantir que as orders foram salvas
+	listResp, err := orderClient.ListOrders()
+	if err != nil {
+		log.Fatalf("Erro ao listar orders: %v", err)
+	}
+	fmt.Printf("Orders: %v\n", listResp)
 
 	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		CreateOrderUseCase: *createOrderUseCase,
