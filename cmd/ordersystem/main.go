@@ -12,7 +12,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/configs"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/event"
-	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/event/handler"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/database"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/graph"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/grpc/client"
@@ -22,7 +21,6 @@ import (
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/infra/web/webserver"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/internal/usecase"
 	"github.com/leonardogomesdossantos/clean-architecture-challenge/pkg/events"
-	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -42,12 +40,7 @@ func main() {
 	}
 	defer db.Close()
 
-	rabbitMQChannel := getRabbitMQChannel()
-
 	eventDispatcher := events.NewEventDispatcher()
-	eventDispatcher.Register("OrderCreated", &handler.OrderCreatedHandler{
-		RabbitMQChannel: rabbitMQChannel,
-	})
 
 	orderRepository := database.NewOrderRepository(db)
 	orderCreated := event.NewOrderCreated()
@@ -112,17 +105,8 @@ func main() {
 	http.Handle("/query", srv)
 
 	fmt.Println("Starting GraphQL server on port", configs.GraphQLServerPort)
-	http.ListenAndServe(":"+configs.GraphQLServerPort, nil)
-}
+	go http.ListenAndServe(":"+configs.GraphQLServerPort, nil)
 
-func getRabbitMQChannel() *amqp.Channel {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	if err != nil {
-		panic(err)
-	}
-	ch, err := conn.Channel()
-	if err != nil {
-		panic(err)
-	}
-	return ch
+	// Manter o programa rodando
+	select {}
 }
